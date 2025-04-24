@@ -1,6 +1,7 @@
 from flask import Flask, request
 import pandas as pd
 import datetime
+import json
 
 app = Flask(__name__)
 WATCHLIST_FILE = 'watchlist.csv'
@@ -27,6 +28,14 @@ def add_ticker():
         return {'status': 'ok'}, 200
 
     return {'status': 'no ticker provided'}, 400
+@app.route('/tickers', methods=['GET'])
 
+def get_tickers():
+    try:
+        watchList = pd.read_csv(WATCHLIST_FILE)
+    except FileNotFoundError:
+        watchList = pd.DataFrame(columns=['Ticker', 'Date'])
+    return watchList.to_json(orient='records')
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5001, host='0.0.0.0')  # 🔥 Nécessaire pour Render
