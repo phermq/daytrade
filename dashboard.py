@@ -10,7 +10,11 @@ import os
 webhook = os.getenv("YOUR_WEBHOOK_URL")
 
 app = dash.Dash(__name__)
-watchlist = pd.read_csv('watchlist.csv')
+
+# ✅ Appel à l'API Flask pour récupérer la watchlist
+response = requests.get("https://daytrade-api.onrender.com/tickers")
+watchlist = pd.DataFrame(response.json())
+
 rows = []
 
 for ticker in watchlist['Ticker']:
@@ -28,7 +32,6 @@ for ticker in watchlist['Ticker']:
         )
 
         if df['signal'].iloc[-1]:
-            # Utiliser le webhook seulement si défini
             if webhook:
                 requests.post(webhook, json={"content": f"✅ Breakout détecté : {ticker}"})
             rows.append(html.Tr([html.Td(ticker), html.Td("Signal détecté")]))
