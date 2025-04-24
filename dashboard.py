@@ -4,6 +4,10 @@ import pandas as pd
 import yfinance as yf
 import ta
 import requests
+import os
+
+# Charger l'URL Discord depuis la variable d'environnement
+webhook = os.getenv("YOUR_WEBHOOK_URL")
 
 app = dash.Dash(__name__)
 watchlist = pd.read_csv('watchlist.csv')
@@ -14,12 +18,19 @@ for ticker in watchlist['Ticker']:
         df = yf.download(ticker, period="1d", interval="1m")
         if len(df) < 10:
             continue
+
         df['body'] = abs(df['Close'] - df['Open'])
-        df['atr'] = ta.volatility.AverageTrueRange(df['High'], df['Low'], df['Close'], window=10).average_true_range()
-        df['signal'] = (df['body'] > 1.5 * df['atr']) & ((df['Close'] - df['Open']) / df['Open'] > 0.012)
+        df['atr'] = ta.volatility.AverageTrueRange(
+            df['High'], df['Low'], df['Close'], window=10
+        ).average_true_range()
+        df['signal'] = (df['body'] > 1.5 * df['atr']) & (
+            (df['Close'] - df['Open']) / df['Open'] > 0.012
+        )
 
         if df['signal'].iloc[-1]:
-            requests.post("https://discord.com/api/webhooks/YOUR_WEBHOOK_URL", json={"content": f"✅ Breakout détecté : {ticker}"})
+            # Utiliser le webhook seulement si défini
+            if webhook:
+                requests.post(webhook, json={"content": f"✅ Breakout détecté : {ticker}"})
             rows.append(html.Tr([html.Td(ticker), html.Td("Signal détecté")]))
         else:
             rows.append(html.Tr([html.Td(ticker), html.Td("Rien")]))
