@@ -10,7 +10,11 @@ WATCHLIST_FILE = 'watchlist.csv'
 def add_ticker():
     data = request.json
     print("✅ Requête reçue :", data)  # 🔍 LOG ICI
-    ticker = data.get('ticker')
+    raw_ticker = data.get('ticker')
+    if raw_ticker:
+        ticker = raw_ticker.strip('"').strip()
+    else:
+        ticker = None
 
     if ticker:
         try:
