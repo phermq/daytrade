@@ -19,7 +19,7 @@ for ticker in watchlist['Ticker']:
         df['signal'] = (df['body'] > 1.5 * df['atr']) & ((df['Close'] - df['Open']) / df['Open'] > 0.012)
 
         if df['signal'].iloc[-1]:
-            requests.post("https://discord.com/api/webhooks/1365066872948658227/Xw_bIxgtrzyTXRr0G9RFhs42cYjRi6eGIbyqpPfcUJhzI87w65m-q53wMol0ly9FCsrp", json={"content": f"✅ Breakout détecté : {ticker}"})
+            requests.post("https://discord.com/api/webhooks/YOUR_WEBHOOK_URL", json={"content": f"✅ Breakout détecté : {ticker}"})
             rows.append(html.Tr([html.Td(ticker), html.Td("Signal détecté")]))
         else:
             rows.append(html.Tr([html.Td(ticker), html.Td("Rien")]))
