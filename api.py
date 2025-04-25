@@ -23,7 +23,7 @@ def add_ticker():
             watchList = pd.DataFrame(columns=['Ticker', 'Date'])
 
         if ticker not in watchList['Ticker'].values:
-            watchList.loc[len(watchList)] = [ticker, datetime.datetime.now().isoformat()]
+            watchList.loc[len(watchList)] = [ticker, datetime.datetime.now().replace(microsecond=0).isoformat()]
             watchList.to_csv(WATCHLIST_FILE, index=False)
             print(f"➕ Ajouté : {ticker}")
         else:
